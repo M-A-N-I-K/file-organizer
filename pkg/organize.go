@@ -3,22 +3,38 @@ package organizer
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 )
 
-func OrganizeFiles(path string) {
+func OrganizeFiles(path string, excludes []string) {
 	files, err := os.ReadDir(path)
 
 	if err != nil {
 		fmt.Println("Error reading path : ", err)
 	}
 
+	fileNameParts := strings.Split(path, "/")
+	folderName := fileNameParts[len(fileNameParts)-1]
+
 	for _, file := range files {
-		fileNameParts := strings.Split(file.Name(), ".")
+		fileName := file.Name()
+		fmt.Println(slices.Contains(excludes, fileName), fileName, excludes)
+		if slices.Contains(excludes, fileName) {
+			fmt.Println("Excluded file : ", fileName)
+			return
+		}
+
+		fileNameParts := strings.Split(fileName, ".")
 		fileType := fileNameParts[len(fileNameParts)-1]
+
+		if fileType+"s" == folderName {
+			return
+		}
+
 		if !file.IsDir() {
-			oldPath := path + "/" + file.Name()
-			newPath := path + "/" + fileType + "s/" + file.Name()
+			oldPath := path + "/" + fileName
+			newPath := path + "/" + fileType + "s/" + fileName
 
 			os.Chdir(path)
 
@@ -33,7 +49,8 @@ func OrganizeFiles(path string) {
 				fmt.Println("Error moving file:", err)
 				return
 			}
-
+		} else {
+			OrganizeFiles(path+"/"+fileName, excludes)
 		}
 
 	}

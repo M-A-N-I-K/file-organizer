@@ -99,7 +99,6 @@ Run:
 
 ## Current Limitations
 
-* Not recursive (only organizes current folder)
 * Does not handle duplicate file names
 * Does not support ignore rules
 * Does not support dry-run mode
@@ -110,7 +109,6 @@ Run:
 
 Planned improvements for this project:
 
-* [ ] Recursive folder organization
 * [ ] Ignore specific folders (node_modules, .git, etc.)
 * [ ] Dry run mode (preview changes)
 * [ ] Custom rules (group images, videos, docs, etc.)
