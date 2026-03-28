@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func OrganizeFiles(path string, excludes []string) {
+func OrganizeFiles(path string, excludes []string, log bool) {
 	files, err := os.ReadDir(path)
 
 	if err != nil {
@@ -19,9 +19,10 @@ func OrganizeFiles(path string, excludes []string) {
 
 	for _, file := range files {
 		fileName := file.Name()
-		fmt.Println(slices.Contains(excludes, fileName), fileName, excludes)
 		if slices.Contains(excludes, fileName) {
-			fmt.Println("Excluded file : ", fileName)
+			if log {
+				fmt.Println("Excluded file : ", fileName)
+			}
 			return
 		}
 
@@ -45,12 +46,16 @@ func OrganizeFiles(path string, excludes []string) {
 			}
 
 			err = os.Rename(oldPath, newPath)
+
+			if log {
+				fmt.Printf("Moved file from %s to %s\n", oldPath, newPath)
+			}
 			if err != nil {
 				fmt.Println("Error moving file:", err)
 				return
 			}
 		} else {
-			OrganizeFiles(path+"/"+fileName, excludes)
+			OrganizeFiles(path+"/"+fileName, excludes, log)
 		}
 
 	}
