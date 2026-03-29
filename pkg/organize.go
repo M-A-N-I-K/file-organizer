@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func OrganizeFiles(path string, excludes []string, log bool) {
+func OrganizeFiles(path string, excludes []string, log bool, dryRun bool) {
 	files, err := os.ReadDir(path)
 
 	if err != nil {
@@ -39,23 +39,33 @@ func OrganizeFiles(path string, excludes []string, log bool) {
 
 			os.Chdir(path)
 
-			err := os.MkdirAll(fileType+"s", os.ModePerm)
-			if err != nil {
-				fmt.Println("Error creating directory:", err)
-				return
+			if !dryRun {
+				err := os.MkdirAll(fileType+"s", os.ModePerm)
+				if err != nil {
+					fmt.Println("Error creating directory:", err)
+					return
+				}
+
+				if log {
+					fmt.Println("Created directory :", fileType+"s")
+				}
+			} else {
+				fmt.Println("Creating directory :", fileType+"s")
 			}
 
-			err = os.Rename(oldPath, newPath)
+			if !dryRun {
+				err = os.Rename(oldPath, newPath)
+				if err != nil {
+					fmt.Println("Error moving file:", err)
+					return
+				}
+			}
 
-			if log {
+			if log || dryRun {
 				fmt.Printf("Moved file from %s to %s\n", oldPath, newPath)
 			}
-			if err != nil {
-				fmt.Println("Error moving file:", err)
-				return
-			}
 		} else {
-			OrganizeFiles(path+"/"+fileName, excludes, log)
+			OrganizeFiles(path+"/"+fileName, excludes, log, dryRun)
 		}
 
 	}
