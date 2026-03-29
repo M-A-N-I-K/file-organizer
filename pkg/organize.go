@@ -5,9 +5,10 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"text/tabwriter"
 )
 
-func OrganizeFiles(path string, excludes []string, log bool, dryRun bool) {
+func OrganizeFiles(path string, w *tabwriter.Writer, excludes []string, log bool, dryRun bool) {
 	files, err := os.ReadDir(path)
 
 	if err != nil {
@@ -45,12 +46,6 @@ func OrganizeFiles(path string, excludes []string, log bool, dryRun bool) {
 					fmt.Println("Error creating directory:", err)
 					return
 				}
-
-				if log {
-					fmt.Println("Created directory :", fileType+"s")
-				}
-			} else {
-				fmt.Println("Creating directory :", fileType+"s")
 			}
 
 			if !dryRun {
@@ -62,10 +57,10 @@ func OrganizeFiles(path string, excludes []string, log bool, dryRun bool) {
 			}
 
 			if log || dryRun {
-				fmt.Printf("Moved file from %s to %s\n", oldPath, newPath)
+				fmt.Fprintf(w, "%s\t%s\t%s\n", "MOVE", oldPath, newPath)
 			}
 		} else {
-			OrganizeFiles(path+"/"+fileName, excludes, log, dryRun)
+			OrganizeFiles(path+"/"+fileName, w, excludes, log, dryRun)
 		}
 
 	}

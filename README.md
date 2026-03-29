@@ -1,7 +1,5 @@
 ## Organize CLI
 
-### Goal
-
 Organize is a lightweight Go-based CLI tool that organizes files in a directory based on their extensions.
 
 The tool scans a folder and moves files into subdirectories named after their file extensions, helping keep the file system clean and structured.
@@ -17,6 +15,8 @@ $ organize <path>
 * Organize files by extension
 * Create folders automatically
 * Move files into extension-based directories
+* Preview changes using `--dry-run`
+* Show move logs in table format using `--log`
 * Simple CLI interface
 * Fast and lightweight
 * Built using Go
@@ -68,6 +68,33 @@ Example:
 $ organize .
 $ organize ./downloads
 $ organize /Users/manik/Desktop/files
+$ organize ./downloads --dry-run
+$ organize ./downloads --log
+```
+
+### Dry run mode
+
+Use `--dry-run` to preview file moves without changing anything on disk.
+
+```bash
+$ organize ./downloads --dry-run
+[DRY RUN] The following changes will be made:
+ACTION   SOURCE                      DESTINATION
+MOVE     file1.txt                   txt/file1.txt
+MOVE     image.jpg                   jpg/image.jpg
+MOVE     data.csv                    csv/data.csv
+```
+
+### Logging mode
+
+Use `--log` to print move operations in the same table UI.
+
+```bash
+$ organize ./downloads --log
+ACTION   SOURCE                      DESTINATION
+MOVE     file1.txt                   txt/file1.txt
+MOVE     image.jpg                   jpg/image.jpg
+MOVE     data.csv                    csv/data.csv
 ```
 
 ---
@@ -101,7 +128,6 @@ Run:
 
 * Does not handle duplicate file names
 * Does not support ignore rules
-* Does not support dry-run mode
 
 ---
 
@@ -110,10 +136,8 @@ Run:
 Planned improvements for this project:
 
 * [ ] Ignore specific folders (node_modules, .git, etc.)
-* [ ] Dry run mode (preview changes)
 * [ ] Custom rules (group images, videos, docs, etc.)
 * [ ] Config file support (JSON / YAML)
-* [ ] Logging support
 * [ ] Colored CLI output
 * [ ] Progress indicator for large folders
 * [ ] Move files based on size / date / type

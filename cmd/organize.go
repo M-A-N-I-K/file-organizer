@@ -3,6 +3,8 @@ package organizer
 import (
 	organizer "file-organizer/pkg"
 	"fmt"
+	"os"
+	"text/tabwriter"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -17,6 +19,7 @@ var organizeCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		start := time.Now()
+		w := tabwriter.NewWriter(os.Stdout, 10, 0, 1, ' ', 0)
 
 		excludes, excludesErr := cmd.Flags().GetStringArray("exclude")
 		log, logErr := cmd.Flags().GetBool("log")
@@ -27,10 +30,21 @@ var organizeCmd = &cobra.Command{
 			return
 		}
 
-		organizer.OrganizeFiles(args[0], excludes, log, dryRun)
+		if dryRun {
+			fmt.Println("[DRY RUN] The following changes will be made:")
+		}
+
+		if log {
+			fmt.Fprintln(w, "ACTION\tSOURCE\tDESTINATION\t")
+		}
+
+		organizer.OrganizeFiles(args[0], w, excludes, log, dryRun)
+
+		w.Flush()
 
 		elapsed := time.Since(start)
 		fmt.Printf("Organizing files took %s ", elapsed)
+
 	},
 }
 
